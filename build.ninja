@@ -1,17 +1,29 @@
 winsroot = ./winsdk
+cc       = clang-cl
+linker   = lld-link
+target   = --target=x86_64-pc-windows-msvc
 
-cc      = clang-cl
-linker  = lld-link
-target  = --target=x86_64-pc-windows-msvc
-cflags  = -Wall -O2
+# We use /O2 for optimization and suppress the noisy SDK warnings
+# Added -fuse-ld=lld here to ensure the driver knows which linker to coordinate with
+cflags   = /O2 /W3 -Wno-ignored-attributes -fuse-ld=lld
+
+# Switched -isystem to /I for proper clang-cl syntax
+sdk_flags = /I $winsroot/sdk/include/ucrt $
+            /I $winsroot/sdk/include/um $
+            /I $winsroot/sdk/include/shared $
+            /I $winsroot/crt/include
+
+# lib_flags remain /libpath: for lld-link
+lib_flags = /libpath:$winsroot/crt/lib/x86_64 $
+            /libpath:$winsroot/sdk/lib/ucrt/x86_64 $
+            /libpath:$winsroot/sdk/lib/um/x86_64
 
 rule cc
-  command = $cc $target /winsysroot $winsroot $cflags /c $in /Fo$out
+  command = $cc $target $cflags $sdk_flags /c $in /Fo$out
   description = CC (Windows) $out
-
-
+  
 rule link
-  command = $linker /nologo /OUT:$out $in
+  command = $linker /nologo $lib_flags /OUT:$out $in
   description = LINK (Windows) $out
 
 build main.obj: cc main.c

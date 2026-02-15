@@ -1,4 +1,7 @@
 app
-.ninja.log
+.ninja_log
 .xwin-cache
 winsdk
+*.o
+*.exe
+*.obj
