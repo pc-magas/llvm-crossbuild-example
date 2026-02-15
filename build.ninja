@@ -1,0 +1,20 @@
+winsroot = ./winsdk
+
+cc      = clang-cl
+linker  = lld-link
+target  = --target=x86_64-pc-windows-msvc
+cflags  = -Wall -O2
+
+rule cc
+  command = $cc $target /winsysroot $winsroot $cflags /c $in /Fo$out
+  description = CC (Windows) $out
+
+
+rule link
+  command = $linker /nologo /OUT:$out $in
+  description = LINK (Windows) $out
+
+build main.obj: cc main.c
+build app.exe: link main.obj
+
+default app.exe
