@@ -1,18 +1,16 @@
-winsroot = ./winsdk
 cc       = cl
 linker   = link
 
-# We use /O2 for optimization and suppress the noisy SDK warnings
-# Added -fuse-ld=lld here to ensure the driver knows which linker to coordinate with
-cflags   = /O2 /W3 -Wno-ignored-attributes -fuse-ld=lld
+cflags   = /O2 /W4
+lib_flags = /nologo
 
 rule cc
-  command = $cc $target $cflags $sdk_flags /c $in /Fo$out
-  description = CC (Windows) $out
+  command = $cc $cflags /c $in /Fo$out
+  description = CC (MSVC) $out
   
 rule link
-  command = $linker /nologo $lib_flags /OUT:$out $in
-  description = LINK (Windows) $out
+  command = $linker $lib_flags /OUT:$out $in
+  description = LINK (MSVC) $out
 
 build main.obj: cc main.c
 build app.exe: link main.obj
