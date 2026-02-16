@@ -1,8 +1,32 @@
 executable("app") {
   sources = [ "main.c" ]
   
-  # Map your original cflags here
-  if (is_win) {
-    cflags = [ "/O2", "/W4" ]
+  cflags = [ "/O2", "/W3" ]
+
+  # Add -Wno-ignored-attributes -fuse-ld=lld if clang-cl
+
+  if (user_toolchain == "clang") {
+    cflags += [ "-Wno-ignored-attributes", "-fuse-ld=lld" ]
   }
+
+  if (!is_win) {
+    # Replace $winsroot with your actual Windows SDK root path
+    winsroot = ./winsdk
+
+    cflags += [
+      "--target=x86_64-pc-windows-msvc",
+      "/I" + winsroot + "/sdk/include/ucrt",
+      "/I" + winsroot + "/sdk/include/um",
+      "/I" + winsroot + "/sdk/include/shared",
+      "/I" + winsroot + "/crt/include",
+    ]
+
+    # Library paths
+    ldflags = [
+      "/libpath:" + winsroot + "/crt/lib/x86_64",
+      "/libpath:" + winsroot + "/sdk/lib/ucrt/x86_64",
+      "/libpath:" + winsroot + "/sdk/lib/um/x86_64",
+    ]
+  }
+
 }
