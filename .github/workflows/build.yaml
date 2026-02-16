@@ -21,4 +21,4 @@ jobs:
         run: link main.obj /OUT:main.exe
 
       - name: Run
-        run: main.exe
+        run: .\main.exe
