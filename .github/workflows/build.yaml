@@ -15,7 +15,7 @@ jobs:
         uses: ilammy/msvc-dev-cmd@v1
 
       - name: Compile C program
-        run: cl /W4 /O2 main.c
+        run: cl /W4 /O2 main.c /Fomain.exe
 
       - name: Run
         run: main.exe
