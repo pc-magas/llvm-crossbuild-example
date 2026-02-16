@@ -1,29 +1,71 @@
-name: Build C Program (MSVC)
+name: Build C Program (GN + Ninja)
 
 on:
   push:
 
 jobs:
-  build_ninja:
+  build-llvm:
     runs-on: windows-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Download Ninja
-        run: |
-          $url = "https://github.com/ninja-build/ninja/releases/download/v1.13.2/ninja-win.zip"
-          $zip = "$env:TEMP\ninja.zip"
-          Invoke-WebRequest -Uri $url -OutFile $zip
-          Expand-Archive -Path $zip -DestinationPath "$env:USERPROFILE\ninja" -Force
 
-      - name: Add Ninja to PATH
-        run: echo "$env:USERPROFILE\ninja" >> $env:GITHUB_PATH
+      - name: Install GN and Ninja
+        shell: powershell
+        run: |
+          # Download Ninja
+          Invoke-WebRequest -Uri "https://github.com/ninja-build/ninja/releases/download/v1.13.2/ninja-win.zip" -OutFile "ninja.zip"
+          Expand-Archive -Path "ninja.zip" -DestinationPath "$env:USERPROFILE\bin" -Force
+          # Download GN (using the official Google storage or a reliable mirror)
+          Invoke-WebRequest -Uri "https://chrome-infra-packages.appspot.com/dl/gn/gn/windows-amd64/+/latest" -OutFile "gn.zip"
+          Expand-Archive -Path "gn.zip" -DestinationPath "$env:USERPROFILE\bin" -Force
+          # Add to PATH
+          echo "$env:USERPROFILE\bin" >> $env:GITHUB_PATH
+          
+      - name: Install LLVM
+        shell: powershell
+        run: |
+          winget install --id=MartinStorsjo.LLVM-MinGW.UCRT  -e
+          [Environment]::SetEnvironmentVariable("Path", $env:Path + ";C:\Program Files\LLVM\bin", "Machine")
+      
+      - name: GN Gen
+        run: gn gen out/clang --args=set_default_toolchain("//build/toolchains:clang")
+      
+      - name: GN Gen
+        run: gn gen out/clang
+
+      - name: Build with Ninja
+        run: ninja -C out/clang
+
+      - name: Run program
+        run: .\out\clang\app.exe
+
+  build-vs:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Setup MSVC Developer Command Prompt
         uses: ilammy/msvc-dev-cmd@v1
 
+      - name: Install GN and Ninja
+        shell: powershell
+        run: |
+          # Download Ninja
+          Invoke-WebRequest -Uri "https://github.com/ninja-build/ninja/releases/download/v1.13.2/ninja-win.zip" -OutFile "ninja.zip"
+          Expand-Archive -Path "ninja.zip" -DestinationPath "$env:USERPROFILE\bin" -Force
+          # Download GN (using the official Google storage or a reliable mirror)
+          Invoke-WebRequest -Uri "https://chrome-infra-packages.appspot.com/dl/gn/gn/windows-amd64/+/latest" -OutFile "gn.zip"
+          Expand-Archive -Path "gn.zip" -DestinationPath "$env:USERPROFILE\bin" -Force
+          # Add to PATH
+          echo "$env:USERPROFILE\bin" >> $env:GITHUB_PATH
+
+      - name: GN Gen
+        run: gn gen out/msvc
+
       - name: Build with Ninja
-        run: ninja -f build.ninja
+        run: ninja -C out/msvc
 
       - name: Run program
-        run: .\app.exe
+        run: .\out\msvc\app.exe
