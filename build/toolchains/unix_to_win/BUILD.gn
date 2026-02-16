@@ -1,0 +1,40 @@
+action("fetch_xwin") {
+    script = "//build/scripts/run_xwin.py"
+    outputs = [ "$target_gen_dir/xwin.stamp" ]
+    args = [
+      "--dest", rebase_path("//winsdk", root_build_dir),
+      "--stamp", rebase_path(outputs[0], root_build_dir), # Add this back!
+    ]
+}
+
+template("build_toolchain") {
+  toolchain(target_name) {
+    # 'invoker' allows us to pass the specific command (cl or clang-cl)
+    cc = invoker.cc
+    link = invoker.link
+
+    tool("stamp") {
+      # Python is the "Universal Translator" for build commands
+      command = "python3 -c \"import sys; open(sys.argv[1], 'a').close()\" {{output}}"
+      description = "STAMP {{output}}"
+    }
+
+    tool("cc") {
+      command = "$cc /O2 /W4 /c {{source}} /Fo{{output}}"
+      description = "CC ($target_name) {{output}}"
+      outputs = [ "{{source_out_dir}}/{{target_output_name}}.obj" ]
+    }
+
+    tool("link") {
+      command = "$link /nologo /OUT:{{output}} {{inputs}}"
+      description = "LINK ($target_name) {{output}}"
+      outputs = [ "{{target_output_name}}.exe" ]
+      default_output_extension = ".exe"
+    }
+  }
+}
+
+build_toolchain("clang") {
+  cc = "clang-cl"
+  link = "lld-link"
+}

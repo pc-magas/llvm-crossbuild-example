@@ -3,15 +3,9 @@ executable("app") {
   
   cflags = [ "/O2", "/W3" ]
 
-  # Add -Wno-ignored-attributes -fuse-ld=lld if clang-cl
-
-  if (user_toolchain == "clang") {
-    cflags += [ "-Wno-ignored-attributes", "-fuse-ld=lld" ]
-  }
-
   if (!is_win) {
     # Replace $winsroot with your actual Windows SDK root path
-    winsroot = "./winsdk"
+    winsroot = rebase_path("//winsdk", root_build_dir)
 
     cflags += [
       "--target=x86_64-pc-windows-msvc",
@@ -29,4 +23,7 @@ executable("app") {
     ]
   }
 
+  if (user_toolchain == "clang") {
+    cflags += [ "-Wno-ignored-attributes", "-fuse-ld=lld" ]
+  }
 }

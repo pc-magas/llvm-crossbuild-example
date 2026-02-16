@@ -1,16 +1,23 @@
 # build/BUILDCONFIG.gn
 
-declare_args() {
-  # Default toolchain is MSVC
-  user_toolchain = "msvc"
+_default_toolchain = "msvc"
+if (host_os != "win") {
+  _default_toolchain = "clang"
 }
 
-# Pick the default toolchain unconditionally
-if (user_toolchain == "msvc") {
-  set_default_toolchain("//build/toolchains:msvc")
+declare_args() {
+ user_toolchain = _default_toolchain
+}
+
+if (host_os == "win") {
+  if (user_toolchain == "msvc") {
+    set_default_toolchain("//build/toolchains/win_to_win:msvc")
+  } else {
+    # Anything else (e.g., "clang")
+    set_default_toolchain("//build/toolchains/win_to_win:clang")
+  }
 } else {
-  # Anything else (e.g., "clang")
-  set_default_toolchain("//build/toolchains:clang")
+  set_default_toolchain("//build/toolchains/unix_to_win:clang")
 }
 
 # Helper variable
