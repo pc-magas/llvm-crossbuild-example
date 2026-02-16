@@ -31,9 +31,6 @@ jobs:
       - name: GN Gen
         run: gn gen out/clang --args='user_toolchain="clang"' --toolchain="//build/toolchains:clang"
       
-      - name: GN Gen
-        run: gn gen out/clang
-
       - name: Build with Ninja
         run: ninja -C out/clang
 
