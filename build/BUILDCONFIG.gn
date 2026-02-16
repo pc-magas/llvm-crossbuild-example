@@ -1,0 +1,5 @@
+# Set default toolchain
+set_default_toolchain("//build/toolchains:msvc")
+
+# Helper variables
+is_win = host_os == "win"

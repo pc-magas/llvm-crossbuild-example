@@ -4,25 +4,6 @@ on:
   push:
 
 jobs:
-  build:
-    runs-on: windows-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup MSVC Developer Command Prompt
-        uses: ilammy/msvc-dev-cmd@v1
-
-      - name: Compile C program
-        run: cl /W4 /O2 main.c /Fomain.obj
-
-      - name: Link C program
-        run: link main.obj /OUT:main.exe
-
-      - name: Run
-        run: main.exe
-
   build_ninja:
     runs-on: windows-latest
     steps:

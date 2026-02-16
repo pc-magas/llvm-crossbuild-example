@@ -5,3 +5,4 @@ winsdk
 *.o
 *.exe
 *.obj
+out

@@ -1,0 +1,8 @@
+executable("app") {
+  sources = [ "main.c" ]
+  
+  # Map your original cflags here
+  if (is_win) {
+    cflags = [ "/O2", "/W4" ]
+  }
+}
