@@ -11,7 +11,6 @@ The project itseld using old-plain c
 
 ```
 cargo install xwin --locked
-xwin --accept-license splat --output ./winsdk
 ```
 
 ### Install LLVM clang compiler
@@ -34,6 +33,25 @@ sudo apt-get install ninja-build
 
 ## Compile
 
+## From Linux
+
 ```
-ninja
+gn gen out/default
+ninja -C out/default
+```
+
+## From windows
+
+### Using Vusial Studio Build tools:
+
+```
+gn gen out/msvc
+ninja -C out/msvc
+```
+
+### Using LLVM clang:
+
+```
+gn gen out/clang --args='user_toolchain="clang"' --toolchain="//build/toolchains:clang"
+ninja -C out/clang
 ```

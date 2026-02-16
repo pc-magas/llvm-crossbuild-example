@@ -66,3 +66,26 @@ jobs:
 
       - name: Run program
         run: .\out\msvc\app.exe
+  
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install GN and Ninja
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build generate-ninja
+
+      - name: Install xwin
+        run: cargo install xwin
+
+      - name: GN Gen
+        run: gn gen out/default
+      
+      - name: Build with Ninja
+        run: ninja -C out/default
