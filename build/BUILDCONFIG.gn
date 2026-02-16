@@ -1,5 +1,17 @@
-# Set default toolchain
-set_default_toolchain("//build/toolchains:msvc")
+# build/BUILDCONFIG.gn
 
-# Helper variables
+declare_args() {
+  # Default toolchain is MSVC
+  user_toolchain = "msvc"
+}
+
+# Pick the default toolchain unconditionally
+if (user_toolchain == "msvc") {
+  set_default_toolchain("//build/toolchains:msvc")
+} else {
+  # Anything else (e.g., "clang")
+  set_default_toolchain("//build/toolchains:clang")
+}
+
+# Helper variable
 is_win = host_os == "win"
