@@ -21,11 +21,11 @@ jobs:
           Expand-Archive -Path "gn.zip" -DestinationPath "$env:USERPROFILE\bin" -Force
           # Add to PATH
           echo "$env:USERPROFILE\bin" >> $env:GITHUB_PATH
-          
+
       - name: Install LLVM
         shell: powershell
         run: |
-          winget install --id=MartinStorsjo.LLVM-MinGW.UCRT  -e
+          winget install --id=MartinStorsjo.LLVM-MinGW.UCRT  -e --accept-package-agreements --accept-source-agreements
           [Environment]::SetEnvironmentVariable("Path", $env:Path + ";C:\Program Files\LLVM\bin", "Machine")
       
       - name: GN Gen
