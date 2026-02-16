@@ -1,6 +1,6 @@
 winsroot = ./winsdk
-cc       = clang-cl
-linker   = lld-link
+cc       = cl
+linker   = link
 
 # We use /O2 for optimization and suppress the noisy SDK warnings
 # Added -fuse-ld=lld here to ensure the driver knows which linker to coordinate with

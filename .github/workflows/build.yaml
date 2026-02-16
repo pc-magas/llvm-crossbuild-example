@@ -11,9 +11,32 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install Ninja
-        uses: lukka/get-ninja@v3
+      - name: Setup MSVC Developer Command Prompt
+        uses: ilammy/msvc-dev-cmd@v1
 
+      - name: Compile C program
+        run: cl /W4 /O2 main.c /Fomain.obj
+
+      - name: Link C program
+        run: link main.obj /OUT:main.exe
+
+      - name: Run
+        run: main.exe
+
+  build_ninja:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Download Ninja
+        run: |
+          $url = "https://github.com/ninja-build/ninja/releases/download/v1.13.2/ninja-win.zip"
+          $zip = "$env:TEMP\ninja.zip"
+          Invoke-WebRequest -Uri $url -OutFile $zip
+          Expand-Archive -Path $zip -DestinationPath "$env:USERPROFILE\ninja" -Force
+
+      - name: Add Ninja to PATH
+        run: echo "$env:USERPROFILE\ninja" >> $env:GITHUB_PATH
 
       - name: Setup MSVC Developer Command Prompt
         uses: ilammy/msvc-dev-cmd@v1
