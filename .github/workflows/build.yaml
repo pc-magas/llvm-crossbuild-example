@@ -29,7 +29,7 @@ jobs:
           [Environment]::SetEnvironmentVariable("Path", $env:Path + ";C:\Program Files\LLVM\bin", "Machine")
       
       - name: GN Gen
-        run: gn gen out/clang --args="user_toolchain=\"clang\"" --toolchain="//build/toolchains:clang"
+        run: gn gen out/clang --args='user_toolchain="clang"' --toolchain="//build/toolchains:clang"
       
       - name: GN Gen
         run: gn gen out/clang
